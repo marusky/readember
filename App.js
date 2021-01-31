@@ -1,11 +1,14 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import SignInScreen from "./components/SignInScreen";
+import SingUpScreen from "./components/SingUpScreen";
+import { AppProvider } from "./context";
 
 export default function App() {
   return (
-    <View>
-      <Text>readember</Text>
-    </View>
+    <AppProvider>
+      <SingUpScreen />
+    </AppProvider>
   );
 }
 
