@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { useGlobalContext } from "../context";
 
-const SingUpScreen = () => {
+const SingUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { signUp, userLoggedIn } = useGlobalContext();
+  const { signUp } = useGlobalContext();
 
   return (
     <View style={styles.container}>

@@ -1,9 +1,5 @@
 import { auth } from "./config";
 
-const addUser = async (email, password) => {
-  console.log("peter");
-};
-
 const reducer = (prevState, action) => {
   switch (action.type) {
     case "SET_PETER": {
@@ -19,8 +15,27 @@ const reducer = (prevState, action) => {
         .then((userCredential) => {
           // Signed in
           var user = userCredential.user;
-          console.log(user);
-          return { ...prevState, user };
+
+          return { ...prevState, user, userSignedIn: true, loading: false };
+        })
+        .catch((error) => {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          console.log("ERROR");
+          console.log(errorCode, errorMessage);
+        });
+      return {
+        ...prevState,
+        loading: true,
+      };
+    }
+    case "SIGN_IN": {
+      const { email, password } = action.payload;
+      auth
+        .signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Signed in
+          var user = userCredential.user;
         })
         .catch((error) => {
           var errorCode = error.code;
