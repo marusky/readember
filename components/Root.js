@@ -12,7 +12,7 @@ import { set } from "react-native-reanimated";
 const Stack = createStackNavigator();
 
 const Root = () => {
-  const { userSignedIn } = useGlobalContext();
+  const { userSignedIn, setUserID } = useGlobalContext();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +21,7 @@ const Root = () => {
     auth.onAuthStateChanged(function (user) {
       if (user) {
         setUser(user);
+        setUserID(user.uid);
         setLoading(false);
       } else {
         setUser(null);

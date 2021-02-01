@@ -4,8 +4,7 @@ import { reducer } from "./reducer";
 const AppContext = React.createContext();
 
 const defaultState = {
-  name: "defa",
-  userSignedIn: false,
+  userID: "",
 };
 
 const AppProvider = ({ children }) => {
@@ -20,8 +19,12 @@ const AppProvider = ({ children }) => {
     dispatch({ type: "SIGN_IN", payload: { email, password } });
   };
 
+  const setUserID = (id) => {
+    dispatch({ type: "SET_USER_ID", payload: id });
+  };
+
   return (
-    <AppContext.Provider value={{ ...state, signUp, signIn }}>
+    <AppContext.Provider value={{ ...state, signUp, signIn, setUserID }}>
       {children}
     </AppContext.Provider>
   );

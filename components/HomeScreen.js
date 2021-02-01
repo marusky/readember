@@ -12,7 +12,6 @@ const HomeScreen = () => {
       .signOut()
       .then(() => {
         // Sign-out successful.
-        console.log("done");
       })
       .catch((error) => {
         // An error happened.
@@ -29,7 +28,7 @@ const HomeScreen = () => {
       </Text>
       <Button title="sign out" onPress={signOut} />
       <Button title="add book" onPress={() => setIsModalOpen(true)} />
-      {/* <AddBookScreen isModalOpen={isModalOpen} closeModal={closeModal} /> */}
+
       <Modal
         isVisible={isModalOpen}
         onSwipeComplete={closeModal}

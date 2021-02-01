@@ -47,7 +47,12 @@ const reducer = (prevState, action) => {
         ...prevState,
       };
     }
+    case "SET_USER_ID": {
+      const userID = action.payload;
+      return { ...prevState, userID };
+    }
   }
+
   throw new Error("no mathing action type");
 };
 

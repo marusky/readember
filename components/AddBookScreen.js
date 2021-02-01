@@ -9,12 +9,20 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
+import { firestore } from "../config";
+import { useGlobalContext } from "../context";
 
 const AddBookScreen = ({ closeModal }) => {
-  const [book, setBook] = useState("");
+  const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [pages, setPages] = useState("");
   const [readInPast, setReadInPast] = useState(false);
+  const { userID } = useGlobalContext();
+  const addBook = async (title, author, pages, readInPast) => {
+    const book = { title, author, pages, readInPast };
+    const res = await firestore.collection(userID).doc(title).set(book);
+    closeModal();
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.modal}>
@@ -27,7 +35,9 @@ const AddBookScreen = ({ closeModal }) => {
           <View>
             <Text style={styles.title}>Add New Book</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => addBook(title, author, pages, readInPast)}
+          >
             <Text
               style={{
                 ...styles.button,
@@ -40,10 +50,10 @@ const AddBookScreen = ({ closeModal }) => {
         </View>
         <View style={styles.inputContainer}>
           <TextInput
-            placeholder="Name of Book"
+            placeholder="Book Title"
             style={styles.input}
-            value={book}
-            onChangeText={(book) => setBook(book)}
+            value={title}
+            onChangeText={(title) => setTitle(title)}
           />
           <TextInput
             placeholder="Author"
