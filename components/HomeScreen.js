@@ -4,6 +4,7 @@ import { Switch, TextInput } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
 import { auth } from "../config";
 import AddBookScreen from "./AddBookScreen";
+import Books from "./Books";
 
 const HomeScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,6 +27,7 @@ const HomeScreen = () => {
       <Text style={{ fontSize: 30, fontWeight: "bold" }}>
         this is HOME screen
       </Text>
+      <Books />
       <Button title="sign out" onPress={signOut} />
       <Button title="add book" onPress={() => setIsModalOpen(true)} />
 
