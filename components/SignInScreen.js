@@ -14,6 +14,7 @@ const SignInScreen = ({ navigation }) => {
         style={styles.input}
         value={email}
         onChangeText={(email) => setEmail(email)}
+        autoCapitalize="none"
       />
       <TextInput
         placeholder="password"
