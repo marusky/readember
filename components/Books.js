@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import { firestore } from "../config";
 import { useGlobalContext } from "../context";
-import BookComp from "./BookComp";
+import BookCard from "./BookCard";
 
 const Books = () => {
   const { userID } = useGlobalContext();
@@ -26,7 +26,7 @@ const Books = () => {
     <FlatList
       horizontal={true}
       data={books}
-      renderItem={(book) => <BookComp {...book.item} />}
+      renderItem={(book) => <BookCard {...book.item} />}
       showsHorizontalScrollIndicator={false}
       style={styles.flatList}
     />

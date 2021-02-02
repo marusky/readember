@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
-const BookComp = ({ author, title, imageUrl }) => {
+const BookCard = ({ author, title, imageUrl }) => {
   return (
     <TouchableOpacity activeOpacity={0.7}>
       <View style={styles.card}>
@@ -25,7 +25,7 @@ const BookComp = ({ author, title, imageUrl }) => {
   );
 };
 
-export default BookComp;
+export default BookCard;
 
 const styles = StyleSheet.create({
   card: {
