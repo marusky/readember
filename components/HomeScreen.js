@@ -23,11 +23,10 @@ const HomeScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 30, fontWeight: "bold" }}>
-        this is HOME screen
-      </Text>
-      <Books />
+    <View style={styles.HomeScreen}>
+      <View style={styles.bookContainer}>
+        <Books />
+      </View>
       <Button title="sign out" onPress={signOut} />
       <Button title="add book" onPress={() => setIsModalOpen(true)} />
 
@@ -48,4 +47,8 @@ const HomeScreen = () => {
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  bookContainer: {
+    height: 350,
+  },
+});

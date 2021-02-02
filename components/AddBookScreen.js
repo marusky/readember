@@ -16,10 +16,11 @@ const AddBookScreen = ({ closeModal }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [pages, setPages] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [readInPast, setReadInPast] = useState(false);
   const { userID } = useGlobalContext();
-  const addBook = async (title, author, pages, readInPast) => {
-    const book = { title, author, pages, readInPast };
+  const addBook = async (title, author, pages, imageUrl, readInPast) => {
+    const book = { title, author, pages, imageUrl, readInPast };
     const res = await firestore.collection(userID).doc(title).set(book);
     closeModal();
   };
@@ -36,7 +37,7 @@ const AddBookScreen = ({ closeModal }) => {
             <Text style={styles.title}>Add New Book</Text>
           </View>
           <TouchableOpacity
-            onPress={() => addBook(title, author, pages, readInPast)}
+            onPress={() => addBook(title, author, pages, imageUrl, readInPast)}
           >
             <Text
               style={{
@@ -68,6 +69,12 @@ const AddBookScreen = ({ closeModal }) => {
             onChangeText={(pages) => setPages(pages)}
             keyboardType="number-pad"
           />
+          <TextInput
+            placeholder="Image Url"
+            style={styles.input}
+            value={imageUrl}
+            onChangeText={(imageUrl) => setImageUrl(imageUrl)}
+          />
         </View>
         <View style={styles.inputContainer}>
           <View style={styles.switchContainer}>
@@ -88,7 +95,6 @@ export default AddBookScreen;
 
 const styles = StyleSheet.create({
   modal: {
-    // flex: 1,
     width: "100%",
     height: "100%",
     marginTop: "10%",

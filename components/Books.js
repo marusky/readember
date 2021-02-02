@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, FlatList } from "react-native";
 import { firestore } from "../config";
 import { useGlobalContext } from "../context";
+import BookComp from "./BookComp";
 
 const Books = () => {
   const { userID } = useGlobalContext();
@@ -22,14 +23,21 @@ const Books = () => {
   }, []);
   //   nech sa to update-ne ked pridam knihu :D
   return (
-    <View>
-      {books.map((book) => (
-        <Text key={book.id}>{book.title}</Text>
-      ))}
-    </View>
+    <FlatList
+      horizontal={true}
+      data={books}
+      renderItem={(book) => <BookComp {...book.item} />}
+      showsHorizontalScrollIndicator={false}
+      style={styles.flatList}
+    />
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  flatList: {
+    height: 150,
+    paddingTop: 20,
+  },
+});
 
 export default Books;
