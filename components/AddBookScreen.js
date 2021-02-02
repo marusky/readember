@@ -20,8 +20,16 @@ const AddBookScreen = ({ closeModal }) => {
   const [readInPast, setReadInPast] = useState(false);
   const { userID } = useGlobalContext();
   const addBook = async (title, author, pages, imageUrl, readInPast) => {
+    // zatial pocitam s tym, ze som online, ked pridavam knihu
     const book = { title, author, pages, imageUrl, readInPast };
     const res = await firestore.collection(userID).doc(title).set(book);
+    const downloadedFile = await FileSystem.downloadAsync(
+      imageUrl,
+      FileSystem.documentDirectory + "title.jpg"
+    );
+    if (downloadedFile.status != 200) {
+      console.log("mame tu error bro AddBookScreen");
+    }
     closeModal();
   };
   return (

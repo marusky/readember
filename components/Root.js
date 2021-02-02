@@ -9,6 +9,7 @@ import { useGlobalContext } from "../context";
 import { auth } from "../config";
 import { set } from "react-native-reanimated";
 import * as FileSystem from "expo-file-system";
+import NetInfo from "@react-native-community/netinfo";
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,21 @@ const Root = () => {
     });
   }, []);
 
+  useEffect(() => {
+    loadString();
+  }, []);
+
+  // useEffect(() => {
+  //   // Subscribe
+  //   const unsubscribe = NetInfo.addEventListener((state) => {
+  //     console.log("Connection type", state.type);
+  //     console.log("Is connected?", state.isConnected);
+  //   });
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, []);
+
   const saveImage = async () => {
     const downloadedFile = await FileSystem.downloadAsync(
       "https://d1w7fb2mkkr3kw.cloudfront.net/assets/images/book/lrg/9780/3930/9780393061055.jpg",
@@ -48,11 +64,26 @@ const Root = () => {
     );
     setTest(imageInfo.uri);
   };
-  // local storage
-  useEffect(() => {
-    // saveImage();
-    loadImage();
-  }, []);
+
+  const saveString = async () => {
+    const object = {
+      pes: "dog",
+      macka: { name: "Lauka", animal: "cat", age: 5 },
+    };
+    const jsonObject = JSON.stringify(object);
+    const string = await FileSystem.writeAsStringAsync(
+      FileSystem.documentDirectory + "books.txt",
+      jsonObject
+    );
+  };
+
+  const loadString = async () => {
+    const string = await FileSystem.readAsStringAsync(
+      FileSystem.documentDirectory + "books.txt"
+    );
+    const obj = JSON.parse(string);
+    console.log(obj);
+  };
 
   if (loading) {
     return (
