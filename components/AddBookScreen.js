@@ -8,9 +8,12 @@ import {
   Switch,
   TouchableWithoutFeedback,
   Keyboard,
+  RefreshControl,
 } from "react-native";
 import { firestore } from "../config";
-import { useGlobalContext } from "../context";
+import { useGlobalContext, refresh } from "../context";
+import uuid from "react-native-uuid";
+import * as FileSystem from "expo-file-system";
 
 const AddBookScreen = ({ closeModal }) => {
   const [title, setTitle] = useState("");
@@ -18,18 +21,68 @@ const AddBookScreen = ({ closeModal }) => {
   const [pages, setPages] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [readInPast, setReadInPast] = useState(false);
-  const { userID } = useGlobalContext();
+  const { userID, refresh } = useGlobalContext();
+
   const addBook = async (title, author, pages, imageUrl, readInPast) => {
     // zatial pocitam s tym, ze som online, ked pridavam knihu
+    const id = uuid.v1();
     const book = { title, author, pages, imageUrl, readInPast };
-    const res = await firestore.collection(userID).doc(title).set(book);
-    const downloadedFile = await FileSystem.downloadAsync(
+    const res = await firestore.collection(userID).doc(id).set(book);
+
+    // // create userID dir
+    // var documentsDir = await FileSystem.readDirectoryAsync(
+    //   FileSystem.documentDirectory
+    // );
+    // if (!documentsDir.includes(userID)) {
+    //   var directory = await FileSystem.makeDirectoryAsync(
+    //     `${FileSystem.documentDirectory}${userID}`
+    //   );
+    // }
+
+    // // create userID/images dir
+    // var userDir = await FileSystem.readDirectoryAsync(
+    //   `${FileSystem.documentDirectory}${userID}`
+    // );
+    // if (!documentsDir.includes("images")) {
+    //   var directory = await FileSystem.makeDirectoryAsync(
+    //     `${FileSystem.documentDirectory}${userID}/images`
+    //   );
+    // }
+
+    // // create userID/books dir
+    // var userDir = await FileSystem.readDirectoryAsync(
+    //   `${FileSystem.documentDirectory}${userID}`
+    // );
+    // if (!documentsDir.includes("books")) {
+    //   var directory = await FileSystem.makeDirectoryAsync(
+    //     `${FileSystem.documentDirectory}${userID}/books`
+    //   );
+    // }
+
+    // download image into image folder (save as bookID.jpg)
+    const downloadedImage = await FileSystem.downloadAsync(
       imageUrl,
-      FileSystem.documentDirectory + "title.jpg"
+      `${FileSystem.documentDirectory}${userID}/images/${id}.jpg`
     );
-    if (downloadedFile.status != 200) {
+    if (downloadedImage.status != 200) {
       console.log("mame tu error bro AddBookScreen");
     }
+
+    // get the image uri (imageInfo.uri)
+    const imageInfo = await FileSystem.getInfoAsync(
+      `${FileSystem.documentDirectory}${userID}/images/${id}.jpg`
+    );
+
+    // save JSON
+    const bookLocal = { ...book, uri: imageInfo.uri };
+    console.log(bookLocal);
+    const bookJSON = JSON.stringify(bookLocal);
+    const write = await FileSystem.writeAsStringAsync(
+      `${FileSystem.documentDirectory}${userID}/books/${id}.txt`,
+      bookJSON
+    );
+
+    refresh();
     closeModal();
   };
   return (

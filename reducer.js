@@ -51,6 +51,8 @@ const reducer = (prevState, action) => {
       const userID = action.payload;
       return { ...prevState, userID };
     }
+    case "REFRESH":
+      return { ...prevState, update: !prevState.update };
   }
 
   throw new Error("no mathing action type");

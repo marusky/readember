@@ -5,6 +5,7 @@ import Modal from "react-native-modal";
 import { auth } from "../config";
 import AddBookScreen from "./AddBookScreen";
 import Books from "./Books";
+import * as FileSystem from "expo-file-system";
 
 const HomeScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

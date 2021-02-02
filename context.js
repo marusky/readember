@@ -5,6 +5,7 @@ const AppContext = React.createContext();
 
 const defaultState = {
   userID: "",
+  update: true,
 };
 
 const AppProvider = ({ children }) => {
@@ -23,8 +24,14 @@ const AppProvider = ({ children }) => {
     dispatch({ type: "SET_USER_ID", payload: id });
   };
 
+  const refresh = () => {
+    dispatch({ type: "REFRESH" });
+  };
+
   return (
-    <AppContext.Provider value={{ ...state, signUp, signIn, setUserID }}>
+    <AppContext.Provider
+      value={{ ...state, signUp, signIn, setUserID, refresh }}
+    >
       {children}
     </AppContext.Provider>
   );

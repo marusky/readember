@@ -3,9 +3,10 @@ import { StyleSheet, Text, View, FlatList } from "react-native";
 import { firestore } from "../config";
 import { useGlobalContext } from "../context";
 import BookCard from "./BookCard";
+import * as FileSystem from "expo-file-system";
 
 const Books = () => {
-  const { userID } = useGlobalContext();
+  const { userID, update } = useGlobalContext();
   const [books, setBooks] = useState([]);
   const fetchBooks = async () => {
     const books = [];
@@ -18,9 +19,20 @@ const Books = () => {
     setBooks(books);
   };
 
+  // const fetchBooksLocal = async () => {
+  //   const books = []
+  //   const loadImage = async () => {
+  //     const imageInfo = await FileSystem.getInfoAsync(
+  //       FileSystem.documentDirectory + "image01.jpg"
+  //     );
+  //     setTest(imageInfo.uri);
+  //   };
+
+  // }
+
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [update]);
   //   nech sa to update-ne ked pridam knihu :D
   return (
     <FlatList
