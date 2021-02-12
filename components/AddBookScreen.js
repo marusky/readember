@@ -22,7 +22,6 @@ const AddBookScreen = ({ closeModal }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [readInPast, setReadInPast] = useState(false);
   const { userID, refresh } = useGlobalContext();
-
   const addBook = async (title, author, pages, imageUrl, readInPast) => {
     // zatial pocitam s tym, ze som online, ked pridavam knihu
     const id = uuid.v1();

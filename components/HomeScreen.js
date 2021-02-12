@@ -1,14 +1,21 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
-import { Switch, TextInput } from "react-native-gesture-handler";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  Button,
+  RefreshControl,
+  ScrollView,
+} from "react-native";
 import Modal from "react-native-modal";
 import { auth } from "../config";
 import AddBookScreen from "./AddBookScreen";
 import Books from "./Books";
-import * as FileSystem from "expo-file-system";
+import { useGlobalContext } from "../context";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const { setNavigation } = useGlobalContext();
   const signOut = () => {
     auth
       .signOut()
@@ -19,12 +26,27 @@ const HomeScreen = () => {
         // An error happened.
       });
   };
+
+  useEffect(() => {
+    setNavigation(navigation);
+  }, []);
+
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    setRefreshing(false);
+  };
+
   return (
-    <View style={styles.HomeScreen}>
+    <ScrollView
+      style={styles.HomeScreen}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.bookContainer}>
         <Books />
       </View>
@@ -42,7 +64,7 @@ const HomeScreen = () => {
       >
         <AddBookScreen closeModal={closeModal} />
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -1,9 +1,15 @@
 import React from "react";
 import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useGlobalContext } from "../context";
 
-const BookCard = ({ author, title, imageUrl }) => {
+const BookCard = (book) => {
+  const { navigation } = useGlobalContext();
+  const { author, title, imageUrl } = book;
   return (
-    <TouchableOpacity activeOpacity={0.7}>
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={() => navigation.navigate("BookScreen", { book, navigation })}
+    >
       <View style={styles.card}>
         <View style={styles.imageContainer}>
           <Image

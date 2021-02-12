@@ -53,6 +53,12 @@ const reducer = (prevState, action) => {
     }
     case "REFRESH":
       return { ...prevState, update: !prevState.update };
+    case "SET_NAVIGATION":
+      return { ...prevState, navigation: action.payload };
+    case "SET_READING_TIME": {
+      console.log(prevState, action.payload);
+      return { ...prevState };
+    }
   }
 
   throw new Error("no mathing action type");

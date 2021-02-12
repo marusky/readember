@@ -6,6 +6,7 @@ const AppContext = React.createContext();
 const defaultState = {
   userID: "",
   update: true,
+  navigation: null,
 };
 
 const AppProvider = ({ children }) => {
@@ -28,9 +29,25 @@ const AppProvider = ({ children }) => {
     dispatch({ type: "REFRESH" });
   };
 
+  const setNavigation = (navigation) => {
+    dispatch({ type: "SET_NAVIGATION", payload: navigation });
+  };
+
+  const setReadingTimeState = (readingTime, bookID) => {
+    dispatch({ type: "SET_READING_TIME", payload: { readingTime, bookID } });
+  };
+
   return (
     <AppContext.Provider
-      value={{ ...state, signUp, signIn, setUserID, refresh }}
+      value={{
+        ...state,
+        signUp,
+        signIn,
+        setUserID,
+        refresh,
+        setNavigation,
+        setReadingTimeState,
+      }}
     >
       {children}
     </AppContext.Provider>

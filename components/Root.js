@@ -10,6 +10,7 @@ import { auth } from "../config";
 import { set } from "react-native-reanimated";
 import * as FileSystem from "expo-file-system";
 import NetInfo from "@react-native-community/netinfo";
+import BookScreen from "./BookScreen";
 
 const Stack = createStackNavigator();
 
@@ -31,10 +32,6 @@ const Root = () => {
         setLoading(false);
       }
     });
-  }, []);
-
-  useEffect(() => {
-    loadString();
   }, []);
 
   // useEffect(() => {
@@ -89,11 +86,6 @@ const Root = () => {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator />
-        {/* {test ? (
-          <Image source={{ uri: test }} style={{ width: 100, height: 200 }} />
-        ) : (
-          <Text>fero</Text>
-        )} */}
       </View>
     );
   }
@@ -103,10 +95,20 @@ const Root = () => {
       {user ? (
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} />
+
+          <Stack.Screen
+            name="BookScreen"
+            component={BookScreen}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator>
-          <Stack.Screen name="Sign In" component={SignInScreen} />
+          <Stack.Screen
+            name="Sign In"
+            component={SignInScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="Sign Up" component={SingUpScreen} />
         </Stack.Navigator>
       )}
