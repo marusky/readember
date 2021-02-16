@@ -16,6 +16,7 @@ export function fetchUser() {
   };
 }
 
+// Books
 export function fetchBooks() {
   return async (dispatch) => {
     const books = [];
@@ -30,5 +31,28 @@ export function fetchBooks() {
     });
 
     dispatch({ type: "SET_BOOKS", books });
+  };
+}
+
+export function addBook(book) {
+  console.log(firebase.auth().currentUser.uid);
+  return async (dispatch) => {
+    try {
+      const res = await firebase
+        .firestore()
+        .collection(firebase.auth().currentUser.uid)
+        .doc(book.id)
+        .set(book);
+
+      dispatch({ type: "ADD_BOOK", book, open: false });
+    } catch (err) {
+      console.log("error when adding a book", err);
+    }
+  };
+}
+
+export function openAddBookModal(open) {
+  return (dispatch) => {
+    dispatch({ type: "OPEN_ADD_BOOK_MODAL", open });
   };
 }

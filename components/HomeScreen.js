@@ -11,8 +11,11 @@ import { auth } from "../config";
 import AddBookScreen from "./AddBookScreen";
 import Books from "./Books";
 import { useGlobalContext } from "../context";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { openAddBookModal } from "../redux/actions";
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, isAddBookOpen, openAddBookModal }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const { setNavigation } = useGlobalContext();
@@ -51,24 +54,30 @@ const HomeScreen = ({ navigation }) => {
         <Books />
       </View>
       <Button title="sign out" onPress={signOut} />
-      <Button title="add book" onPress={() => setIsModalOpen(true)} />
+      <Button title="add book" onPress={() => openAddBookModal(true)} />
 
       <Modal
-        isVisible={isModalOpen}
-        onSwipeComplete={closeModal}
+        isVisible={isAddBookOpen}
+        onSwipeComplete={() => openAddBookModal(false)}
         swipeDirection="down"
         style={{
           width: "100%",
           marginLeft: 0,
         }}
       >
-        <AddBookScreen closeModal={closeModal} />
+        <AddBookScreen closeModal={() => openAddBookModal(false)} />
       </Modal>
     </ScrollView>
   );
 };
 
-export default HomeScreen;
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators({ openAddBookModal }, dispatch);
+
+const mapStateToProps = (store) => ({
+  isAddBookOpen: store.booksState.isAddBookOpen,
+});
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
 
 const styles = StyleSheet.create({
   bookContainer: {

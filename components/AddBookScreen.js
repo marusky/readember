@@ -14,76 +14,89 @@ import { firestore } from "../config";
 import { useGlobalContext, refresh } from "../context";
 import uuid from "react-native-uuid";
 import * as FileSystem from "expo-file-system";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { addBook } from "../redux/actions";
 
-const AddBookScreen = ({ closeModal }) => {
+const AddBookScreen = ({ closeModal, addBook }) => {
+  const [book, setBook] = useState({
+    id: uuid.v1(),
+    title: "",
+    author: "",
+    pagesTotal: "",
+    pagesRead: "0",
+    readingTime: "0",
+    lastReadAt: new Date().toLocaleString(),
+  });
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [pages, setPages] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [readInPast, setReadInPast] = useState(false);
   const { userID, refresh } = useGlobalContext();
-  const addBook = async (title, author, pages, imageUrl, readInPast) => {
-    // zatial pocitam s tym, ze som online, ked pridavam knihu
-    const id = uuid.v1();
-    const book = { title, author, pages, imageUrl, readInPast };
-    const res = await firestore.collection(userID).doc(id).set(book);
 
-    // // create userID dir
-    // var documentsDir = await FileSystem.readDirectoryAsync(
-    //   FileSystem.documentDirectory
-    // );
-    // if (!documentsDir.includes(userID)) {
-    //   var directory = await FileSystem.makeDirectoryAsync(
-    //     `${FileSystem.documentDirectory}${userID}`
-    //   );
-    // }
+  // const addBook = async (title, author, pages, imageUrl, readInPast) => {
+  //   // zatial pocitam s tym, ze som online, ked pridavam knihu
+  //   const id = uuid.v1();
+  //   const book = { title, author, pages, imageUrl, readInPast };
+  //   const res = await firestore.collection(userID).doc(id).set(book);
 
-    // // create userID/images dir
-    // var userDir = await FileSystem.readDirectoryAsync(
-    //   `${FileSystem.documentDirectory}${userID}`
-    // );
-    // if (!documentsDir.includes("images")) {
-    //   var directory = await FileSystem.makeDirectoryAsync(
-    //     `${FileSystem.documentDirectory}${userID}/images`
-    //   );
-    // }
+  //   // // create userID dir
+  //   // var documentsDir = await FileSystem.readDirectoryAsync(
+  //   //   FileSystem.documentDirectory
+  //   // );
+  //   // if (!documentsDir.includes(userID)) {
+  //   //   var directory = await FileSystem.makeDirectoryAsync(
+  //   //     `${FileSystem.documentDirectory}${userID}`
+  //   //   );
+  //   // }
 
-    // // create userID/books dir
-    // var userDir = await FileSystem.readDirectoryAsync(
-    //   `${FileSystem.documentDirectory}${userID}`
-    // );
-    // if (!documentsDir.includes("books")) {
-    //   var directory = await FileSystem.makeDirectoryAsync(
-    //     `${FileSystem.documentDirectory}${userID}/books`
-    //   );
-    // }
+  //   // // create userID/images dir
+  //   // var userDir = await FileSystem.readDirectoryAsync(
+  //   //   `${FileSystem.documentDirectory}${userID}`
+  //   // );
+  //   // if (!documentsDir.includes("images")) {
+  //   //   var directory = await FileSystem.makeDirectoryAsync(
+  //   //     `${FileSystem.documentDirectory}${userID}/images`
+  //   //   );
+  //   // }
 
-    // download image into image folder (save as bookID.jpg)
-    const downloadedImage = await FileSystem.downloadAsync(
-      imageUrl,
-      `${FileSystem.documentDirectory}${userID}/images/${id}.jpg`
-    );
-    if (downloadedImage.status != 200) {
-      console.log("mame tu error bro AddBookScreen");
-    }
+  //   // // create userID/books dir
+  //   // var userDir = await FileSystem.readDirectoryAsync(
+  //   //   `${FileSystem.documentDirectory}${userID}`
+  //   // );
+  //   // if (!documentsDir.includes("books")) {
+  //   //   var directory = await FileSystem.makeDirectoryAsync(
+  //   //     `${FileSystem.documentDirectory}${userID}/books`
+  //   //   );
+  //   // }
 
-    // get the image uri (imageInfo.uri)
-    const imageInfo = await FileSystem.getInfoAsync(
-      `${FileSystem.documentDirectory}${userID}/images/${id}.jpg`
-    );
+  //   // download image into image folder (save as bookID.jpg)
+  //   const downloadedImage = await FileSystem.downloadAsync(
+  //     imageUrl,
+  //     `${FileSystem.documentDirectory}${userID}/images/${id}.jpg`
+  //   );
+  //   if (downloadedImage.status != 200) {
+  //     console.log("mame tu error bro AddBookScreen");
+  //   }
 
-    // save JSON
-    const bookLocal = { ...book, uri: imageInfo.uri };
-    console.log(bookLocal);
-    const bookJSON = JSON.stringify(bookLocal);
-    const write = await FileSystem.writeAsStringAsync(
-      `${FileSystem.documentDirectory}${userID}/books/${id}.txt`,
-      bookJSON
-    );
+  //   // get the image uri (imageInfo.uri)
+  //   const imageInfo = await FileSystem.getInfoAsync(
+  //     `${FileSystem.documentDirectory}${userID}/images/${id}.jpg`
+  //   );
 
-    refresh();
-    closeModal();
-  };
+  //   // save JSON
+  //   const bookLocal = { ...book, uri: imageInfo.uri };
+  //   console.log(bookLocal);
+  //   const bookJSON = JSON.stringify(bookLocal);
+  //   const write = await FileSystem.writeAsStringAsync(
+  //     `${FileSystem.documentDirectory}${userID}/books/${id}.txt`,
+  //     bookJSON
+  //   );
+
+  //   refresh();
+  //   closeModal();
+  // };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.modal}>
@@ -97,7 +110,17 @@ const AddBookScreen = ({ closeModal }) => {
             <Text style={styles.title}>Add New Book</Text>
           </View>
           <TouchableOpacity
-            onPress={() => addBook(title, author, pages, imageUrl, readInPast)}
+            onPress={() =>
+              addBook({
+                id: uuid.v1(),
+                title,
+                author,
+                pagesTotal: pages,
+                pagesRead: "0",
+                readingTime: "0",
+                lastReadAt: new Date().toLocaleString(),
+              })
+            }
           >
             <Text
               style={{
@@ -113,30 +136,24 @@ const AddBookScreen = ({ closeModal }) => {
           <TextInput
             placeholder="Book Title"
             style={styles.input}
-            value={title}
-            onChangeText={(title) => setTitle(title)}
+            value={book.title}
+            onChangeText={(title) => setBook({ ...book, title })}
           />
           <TextInput
             placeholder="Author"
             style={styles.input}
-            value={author}
-            onChangeText={(author) => setAuthor(author)}
+            value={book.author}
+            onChangeText={(author) => setBook({ ...book, author })}
           />
           <TextInput
             placeholder="Number of Pages"
             style={styles.input}
-            value={pages}
-            onChangeText={(pages) => setPages(pages)}
+            value={book.pagesTotal}
+            onChangeText={(pagesTotal) => setBook({ ...book, pagesTotal })}
             keyboardType="number-pad"
           />
-          <TextInput
-            placeholder="Image Url"
-            style={styles.input}
-            value={imageUrl}
-            onChangeText={(imageUrl) => setImageUrl(imageUrl)}
-          />
         </View>
-        <View style={styles.inputContainer}>
+        {/* <View style={styles.inputContainer}>
           <View style={styles.switchContainer}>
             <Text style={{ ...styles.input }}>Read in past</Text>
             <Switch
@@ -145,13 +162,15 @@ const AddBookScreen = ({ closeModal }) => {
               onValueChange={(value) => setReadInPast(value)}
             />
           </View>
-        </View>
+        </View> */}
       </View>
     </TouchableWithoutFeedback>
   );
 };
 
-export default AddBookScreen;
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators({ addBook }, dispatch);
+export default connect(null, mapDispatchToProps)(AddBookScreen);
 
 const styles = StyleSheet.create({
   modal: {

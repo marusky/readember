@@ -11,14 +11,14 @@ const BookCard = (book) => {
       onPress={() => navigation.navigate("BookScreen", { book, navigation })}
     >
       <View style={styles.card}>
-        <View style={styles.imageContainer}>
-          <Image
+        <View style={{ ...styles.imageContainer, backgroundColor: "#ddd" }}>
+          {/* <Image
             style={styles.image}
             resizeMode="contain"
             source={{
               uri: imageUrl,
             }}
-          />
+          /> */}
         </View>
         <View style={styles.descContainer}>
           <Text style={styles.title} numberOfLines={1}>
