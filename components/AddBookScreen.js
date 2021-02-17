@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,10 +8,13 @@ import {
   Switch,
   TouchableWithoutFeedback,
   Keyboard,
-  RefreshControl,
+  Image,
+  Button,
 } from "react-native";
-import { firestore } from "../config";
-import { useGlobalContext, refresh } from "../context";
+
+import { Camera } from "expo-camera";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 import uuid from "react-native-uuid";
 import * as FileSystem from "expo-file-system";
 import { connect } from "react-redux";
@@ -19,84 +22,29 @@ import { bindActionCreators } from "redux";
 import { addBook } from "../redux/actions";
 
 const AddBookScreen = ({ closeModal, addBook }) => {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [camera, setCamera] = useState(null);
+
+  const getPermission = async () => {
+    const { status } = await Camera.requestPermissionsAsync();
+    setHasPermission(status === "granted");
+  };
+
+  const takePicture = async () => {
+    const data = await camera.takePictureAsync(null);
+    setBook({ ...book, image: data.uri });
+  };
   const [book, setBook] = useState({
     id: uuid.v1(),
     title: "",
     author: "",
+    image: null,
     pagesTotal: "",
     pagesRead: "0",
     readingTime: "0",
     lastReadAt: new Date().toLocaleString(),
   });
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [pages, setPages] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [readInPast, setReadInPast] = useState(false);
-  const { userID, refresh } = useGlobalContext();
 
-  // const addBook = async (title, author, pages, imageUrl, readInPast) => {
-  //   // zatial pocitam s tym, ze som online, ked pridavam knihu
-  //   const id = uuid.v1();
-  //   const book = { title, author, pages, imageUrl, readInPast };
-  //   const res = await firestore.collection(userID).doc(id).set(book);
-
-  //   // // create userID dir
-  //   // var documentsDir = await FileSystem.readDirectoryAsync(
-  //   //   FileSystem.documentDirectory
-  //   // );
-  //   // if (!documentsDir.includes(userID)) {
-  //   //   var directory = await FileSystem.makeDirectoryAsync(
-  //   //     `${FileSystem.documentDirectory}${userID}`
-  //   //   );
-  //   // }
-
-  //   // // create userID/images dir
-  //   // var userDir = await FileSystem.readDirectoryAsync(
-  //   //   `${FileSystem.documentDirectory}${userID}`
-  //   // );
-  //   // if (!documentsDir.includes("images")) {
-  //   //   var directory = await FileSystem.makeDirectoryAsync(
-  //   //     `${FileSystem.documentDirectory}${userID}/images`
-  //   //   );
-  //   // }
-
-  //   // // create userID/books dir
-  //   // var userDir = await FileSystem.readDirectoryAsync(
-  //   //   `${FileSystem.documentDirectory}${userID}`
-  //   // );
-  //   // if (!documentsDir.includes("books")) {
-  //   //   var directory = await FileSystem.makeDirectoryAsync(
-  //   //     `${FileSystem.documentDirectory}${userID}/books`
-  //   //   );
-  //   // }
-
-  //   // download image into image folder (save as bookID.jpg)
-  //   const downloadedImage = await FileSystem.downloadAsync(
-  //     imageUrl,
-  //     `${FileSystem.documentDirectory}${userID}/images/${id}.jpg`
-  //   );
-  //   if (downloadedImage.status != 200) {
-  //     console.log("mame tu error bro AddBookScreen");
-  //   }
-
-  //   // get the image uri (imageInfo.uri)
-  //   const imageInfo = await FileSystem.getInfoAsync(
-  //     `${FileSystem.documentDirectory}${userID}/images/${id}.jpg`
-  //   );
-
-  //   // save JSON
-  //   const bookLocal = { ...book, uri: imageInfo.uri };
-  //   console.log(bookLocal);
-  //   const bookJSON = JSON.stringify(bookLocal);
-  //   const write = await FileSystem.writeAsStringAsync(
-  //     `${FileSystem.documentDirectory}${userID}/books/${id}.txt`,
-  //     bookJSON
-  //   );
-
-  //   refresh();
-  //   closeModal();
-  // };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.modal}>
@@ -109,19 +57,7 @@ const AddBookScreen = ({ closeModal, addBook }) => {
           <View>
             <Text style={styles.title}>Add New Book</Text>
           </View>
-          <TouchableOpacity
-            onPress={() =>
-              addBook({
-                id: uuid.v1(),
-                title,
-                author,
-                pagesTotal: pages,
-                pagesRead: "0",
-                readingTime: "0",
-                lastReadAt: new Date().toLocaleString(),
-              })
-            }
-          >
+          <TouchableOpacity onPress={() => addBook(book)}>
             <Text
               style={{
                 ...styles.button,
@@ -132,6 +68,34 @@ const AddBookScreen = ({ closeModal, addBook }) => {
             </Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.imageContainer}>
+          {hasPermission ? (
+            book.image ? (
+              <Image
+                source={{ uri: book.image }}
+                style={{ width: 150, height: 200 }}
+              />
+            ) : (
+              <TouchableOpacity onPress={takePicture}>
+                <Camera
+                  ref={(ref) => setCamera(ref)}
+                  style={{ width: 150, height: 200 }}
+                  type={Camera.Constants.Type.back}
+                  ratio="4:3"
+                ></Camera>
+              </TouchableOpacity>
+            )
+          ) : (
+            <TouchableOpacity onPress={getPermission}>
+              <MaterialCommunityIcons
+                name="image-plus"
+                size={100}
+                color="white"
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Book Title"
@@ -223,5 +187,17 @@ const styles = StyleSheet.create({
   },
   switch: {
     marginRight: 20,
+  },
+  imageContainer: {
+    height: 250,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    backgroundColor: "whitesmoke",
+    height: 200,
+    width: 150,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

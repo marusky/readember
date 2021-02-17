@@ -35,16 +35,17 @@ export function fetchBooks() {
 }
 
 export function addBook(book) {
-  console.log(firebase.auth().currentUser.uid);
   return async (dispatch) => {
     try {
+      // pridavam do state-u hned, do databazy dodatocne
+      // teda to ide aj offline, ale keby to robilo problemy, tak problemy su tu.
+      dispatch({ type: "ADD_BOOK", book, open: false });
+
       const res = await firebase
         .firestore()
         .collection(firebase.auth().currentUser.uid)
         .doc(book.id)
         .set(book);
-
-      dispatch({ type: "ADD_BOOK", book, open: false });
     } catch (err) {
       console.log("error when adding a book", err);
     }

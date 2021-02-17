@@ -1,39 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
-import { firestore } from "../config";
-import { useGlobalContext } from "../context";
+
 import BookCard from "./BookCard";
 import * as FileSystem from "expo-file-system";
+import { fetchBooks } from "../redux/actions";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
-const Books = () => {
-  const { userID, update } = useGlobalContext();
-  const [books, setBooks] = useState([]);
-  const fetchBooks = async () => {
-    const books = [];
-    const userBooksRef = firestore.collection(userID); // order by lastReadAt
-    const snapshot = await userBooksRef.get();
-    snapshot.forEach((doc) => {
-      books.push({ ...doc.data(), id: doc.id });
-    });
-
-    setBooks(books);
-  };
-
-  // const fetchBooksLocal = async () => {
-  //   const books = []
-  //   const loadImage = async () => {
-  //     const imageInfo = await FileSystem.getInfoAsync(
-  //       FileSystem.documentDirectory + "image01.jpg"
-  //     );
-  //     setTest(imageInfo.uri);
-  //   };
-
-  // }
-
-  useEffect(() => {
-    fetchBooks();
-  }, [update]);
-  //   nech sa to update-ne ked pridam knihu :D
+const Books = ({ fetchBooks, books }) => {
   return (
     <FlatList
       horizontal={true}
@@ -52,4 +26,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Books;
+const mapStateToProps = (store) => ({
+  books: store.booksState.books,
+});
+
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators({ fetchBooks }, dispatch);
+export default connect(mapStateToProps, mapDispatchToProps)(Books);

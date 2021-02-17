@@ -6,6 +6,7 @@ import {
   View,
   StatusBar,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
@@ -15,8 +16,14 @@ import { bindActionCreators } from "redux";
 import { fetchUser, fetchBooks } from "../redux/actions/index";
 
 const BookScreen = ({ route, fetchUser, fetchBooks, currentUser, books }) => {
-  console.log(books);
   const { title, author, id } = route.params.book;
+  const [image, setImage] = useState(null);
+  const book = books.find((book) => book.id === id);
+  useEffect(() => {
+    setImage(book.uri);
+  }, [book]);
+
+  console.log(book.image);
   const [isHeaderShown, setIsHeaderShown] = useState(false);
   const [statusBarContent, setStatusBarContent] = useState("light");
   const [isPlaying, setIsPlaying] = useState(true);
@@ -116,6 +123,8 @@ const BookScreen = ({ route, fetchUser, fetchBooks, currentUser, books }) => {
       </Modal>
       <Text>{title}</Text>
       <Button title="read!" onPress={openHeader} />
+      <Image style={{ width: 100, height: 100 }} source={{ uri: image }} />
+      {/* {image ? <Image source={{ uri: image }} /> : <Text>no image</Text>} */}
       <Button title="pokus" onPress={fetchUser} />
       <Button title="fetch books" onPress={fetchBooks} />
       {currentUser ? <Text>{currentUser.name}</Text> : <Text>not yet</Text>}

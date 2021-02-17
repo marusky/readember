@@ -13,9 +13,14 @@ import Books from "./Books";
 import { useGlobalContext } from "../context";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { openAddBookModal } from "../redux/actions";
+import { fetchBooks, openAddBookModal } from "../redux/actions";
 
-const HomeScreen = ({ navigation, isAddBookOpen, openAddBookModal }) => {
+const HomeScreen = ({
+  navigation,
+  isAddBookOpen,
+  openAddBookModal,
+  fetchBooks,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const { setNavigation } = useGlobalContext();
@@ -40,6 +45,7 @@ const HomeScreen = ({ navigation, isAddBookOpen, openAddBookModal }) => {
 
   const onRefresh = () => {
     setRefreshing(true);
+    fetchBooks();
     setRefreshing(false);
   };
 
@@ -72,7 +78,7 @@ const HomeScreen = ({ navigation, isAddBookOpen, openAddBookModal }) => {
 };
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ openAddBookModal }, dispatch);
+  bindActionCreators({ openAddBookModal, fetchBooks }, dispatch);
 
 const mapStateToProps = (store) => ({
   isAddBookOpen: store.booksState.isAddBookOpen,

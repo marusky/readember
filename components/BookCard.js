@@ -4,7 +4,7 @@ import { useGlobalContext } from "../context";
 
 const BookCard = (book) => {
   const { navigation } = useGlobalContext();
-  const { author, title, imageUrl } = book;
+  const { author, title, image } = book;
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -12,13 +12,13 @@ const BookCard = (book) => {
     >
       <View style={styles.card}>
         <View style={{ ...styles.imageContainer, backgroundColor: "#ddd" }}>
-          {/* <Image
+          <Image
             style={styles.image}
             resizeMode="contain"
             source={{
-              uri: imageUrl,
+              uri: image,
             }}
-          /> */}
+          />
         </View>
         <View style={styles.descContainer}>
           <Text style={styles.title} numberOfLines={1}>
